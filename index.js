@@ -10,6 +10,10 @@ socket.on("connect", () => {
     console.log("socket.io connected");
 });
 
+socket.on("getGarageDoorId", async (message, callback) => {
+    callback(config.garageDoorId);
+});
+
 socket.on("getGarageDoorStatus", async (message, callback) => {
     const garageDoorStatus = await piProvider.getGarageDoorStatus();
     callback(garageDoorStatus);
