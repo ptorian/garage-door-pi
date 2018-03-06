@@ -10,7 +10,15 @@ socket.on("connect", () => {
     console.log("socket.io connected");
 });
 
+socket.on("getGarageDoorStatus", async (message, callback) => {
+    const garageDoorStatus = await piProvider.getGarageDoorStatus();
+    callback(garageDoorStatus);
+});
+
 socket.on("toggleGarageDoorState", async () => {
     await piProvider.activateGarageDoorOpener();
 });
 
+piProvider.watchGarageDoorOpenInput(status => {
+    socket.emit("garageDoorStatus", status);
+});

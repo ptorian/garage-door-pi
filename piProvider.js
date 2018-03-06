@@ -6,9 +6,7 @@ class PiProvider {
         this.logger = logger;
 
         this.garageOpenerOutput = new Gpio(garageOpenerOutputGpioPin, 'out');
-        this.garageDoorOpenInput = new Gpio(garageDoorSensorGpioPin, "in");
-
-        this.watchGarageDoorOpenInput();
+        this.garageDoorOpenInput = new Gpio(garageDoorSensorGpioPin, "in", "both");
     }
 
     writeValue(gpio, value) {
@@ -44,19 +42,21 @@ class PiProvider {
     }
 
     async getGarageDoorStatus() {
-        return this.readValue(this.garageDoorOpenInput);
+        return await this.readValue(this.garageDoorOpenInput);
     }
 
-    async watchGarageDoorOpenInput() {
-        const initialValue = await this.readValue(this.garageDoorOpenInput);
-        this.logger.info(`Garage door is initially ${initialValue === 0 ? "open" : "closed"}`);
+    watchGarageDoorOpenInput(callback) {
+        this.getGarageDoorStatus()
+            .then(initialValue => {
+                callback(initialValue);
+            });
 
         this.garageDoorOpenInput.watch((err, value) => {
             if (err) {
                 this.logger.error(err);
             }
 
-            this.logger.info(`Garage door is now ${value === 0 ? "open" : "closed"}`);
+            callback(value);
         });
     }
 }
