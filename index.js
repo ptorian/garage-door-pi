@@ -23,3 +23,7 @@ socket.on("toggleGarageDoorState", async () => {
 piProvider.watchGarageDoorOpenInput(status => {
     socket.emit("garageDoorStatus", status);
 });
+
+setInterval(() => {
+    socket.emit("heartbeat");
+}, config.heartbeatInterval);
